@@ -1,13 +1,21 @@
-using BlazorServer.Data;
+using BlazorServer.Servicios;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Cargar configuración desde appsettings.json
+var apiBaseUrl = builder.Configuration.GetValue<string>("ApiBaseUrl") ?? "https://localhost:44319/";
+
+// Agregar servicios
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+
+// Configurar HttpClient con la URL de la API desde appsettings.json
+builder.Services.AddHttpClient<IServicioAlumnos, ServicioAlumnos>(cliente =>
+{
+    cliente.BaseAddress = new Uri(apiBaseUrl);
+});
 
 var app = builder.Build();
 

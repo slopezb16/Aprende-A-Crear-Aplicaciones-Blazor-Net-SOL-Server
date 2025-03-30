@@ -1,0 +1,47 @@
+﻿@page "/ListaAlumnos"
+@inherits ListaAlumnosBase
+
+<h3 class="text-center my-3">Lista de Alumnos</h3>
+
+<div class="text-center mb-3">
+    <button class="btn btn-success" @onclick="CrearAlumno">Nuevo Alumno</button>
+</div>
+
+@if (IsLoading)
+{
+    <div class="d-flex justify-content-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row gx-3 gy-3">
+        @foreach (var alumno in Alumnos)
+        {
+            <div class="col-lg-3 col-md-4 col-sm-6 col-12">
+                <div class="text-center card shadow-lg @(alumno.FechaBaja != null ? "bg-danger text-white" : "")">
+                    <div class="card-header text-center">
+                        <h5>@alumno.Nombre</h5>
+                    </div>
+                    @* <img class="card-img-top imageThumbnail" src="@alumno.Foto" alt="Foto de @alumno.Nombre" /> *@
+                    <img class="rounded-circle img-fluid mb-3 align-self-center" src="@alumno.Foto" alt="Foto de @alumno.Nombre" style="width: 150px; height: 150px;" />
+                    <div class="card-footer text-center">
+                        <button class="btn btn-outline-primary m-1" @onclick="() => VerAlumnoCursos(alumno.Id)">Cursos</button>
+                        <button class="btn btn-outline-info m-1" @onclick="() => VerAlumno(alumno.Id)">Ver</button>
+                        <button class="btn btn-outline-warning m-1" @onclick="() => EditarAlumno(alumno.Id)">Editar</button>
+                        @if (alumno.FechaBaja == null)
+                        {
+                            <button class="btn btn-outline-danger m-1" @onclick="() => BorrarAlumno(alumno.Id)">Borrar</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-success m-1" @onclick="() => ActivarAlumno(alumno.Id)">Activar</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
