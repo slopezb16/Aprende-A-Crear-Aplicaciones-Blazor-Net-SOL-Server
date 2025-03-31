@@ -117,13 +117,18 @@ namespace ApiAlumnos.Repositorios
             return curso;
         }
 
-        public async Task<IEnumerable<Curso>> DameCursos()
+        public async Task<IEnumerable<Curso>> DameCursos(int idAlumno)
         {
             var listaCursos = new List<Curso>();
 
             using (var sqlConexion = Conexion())
             using (var Comm = new SqlCommand("dbo.CursoDameCursos", sqlConexion) { CommandType = CommandType.StoredProcedure })
             {
+                if (idAlumno != -1)
+                    Comm.Parameters.AddWithValue("@idAlumno", idAlumno);
+                else
+                    Comm.Parameters.AddWithValue("@idAlumno", DBNull.Value);
+
                 await sqlConexion.OpenAsync().ConfigureAwait(false);
 
                 using (var reader = await Comm.ExecuteReaderAsync().ConfigureAwait(false))

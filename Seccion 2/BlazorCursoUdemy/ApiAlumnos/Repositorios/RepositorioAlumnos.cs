@@ -330,7 +330,7 @@ namespace ApiAlumnos.Repositorios
             return listaAlumnos;
         }
 
-        public async Task<Alumno> InscribirAlumnoCurso(int idAlumno, int idCurso)
+        public async Task<Alumno> InscribirAlumnoCurso(int idAlumno, int idCurso, int idPrecio)
         {
             Alumno alumnoInscrito = null;
 
@@ -339,6 +339,7 @@ namespace ApiAlumnos.Repositorios
             {
                 comm.Parameters.Add("@idAlumno", SqlDbType.Int).Value = idAlumno;
                 comm.Parameters.Add("@idCurso", SqlDbType.Int).Value = idCurso;
+                comm.Parameters.Add("@idPrecio", SqlDbType.Int).Value = idPrecio;
 
                 try
                 {

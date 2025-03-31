@@ -161,9 +161,12 @@ namespace ApiAlumnos.Controllers
             }
         }
 
-        [HttpPost("InscribirAlumno/{idAlumno}/{idCurso}")]
-        public async Task<ActionResult<Alumno>> InscribirAlumnoCurso(int idAlumno, int idCurso)
+        [HttpPost("InscribirAlumno/{idAlumno}/{idCurso}/{idPrecio}")]
+        public async Task<ActionResult<Alumno>> InscribirAlumnoCurso(int idAlumno, int idCurso, int idPrecio)
         {
+            if (idAlumno <= 0 || idCurso <= 0 || idPrecio <= 0)
+                return BadRequest("Los IDs deben ser valores positivos.");
+
             try
             {
                 var alumnoValidar = await _repositorioAlumnos.DameAlumno(idAlumno);
@@ -171,11 +174,16 @@ namespace ApiAlumnos.Controllers
                 if (alumnoValidar == null)
                     return NotFound("Alumno no encontrado");
 
-                return await _repositorioAlumnos.InscribirAlumnoCurso(idAlumno, idCurso);
+                var alumnoInscrito = await _repositorioAlumnos.InscribirAlumnoCurso(idAlumno, idCurso, idPrecio);
+
+                if (alumnoInscrito == null)
+                    return StatusCode(500, "No se pudo inscribir al alumno en el curso.");
+
+                return Ok(alumnoInscrito);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error inscribiendo alumno en curso");
+                return StatusCode(500, $"Error al inscribir alumno en curso: {ex.Message}");
             }
         }
 

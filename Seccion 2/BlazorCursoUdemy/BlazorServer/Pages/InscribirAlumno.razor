@@ -1,0 +1,61 @@
+﻿@page "/InscribirAlumno/{id:int}"
+@using BlazorServer.Servicios;
+@using ModeloClasesAlumnos;
+
+<h1>Inscribir a @Alumno?.Nombre en un curso</h1>
+
+<div class="form-group row">
+    <div class="col-sm-10">
+        <a href="@($"AlumnoCursosDetalle/{id}")" class="btn btn-primary m-1">Cursos actuales del alumno</a>
+        <a href="/ListaAlumnos" class="btn btn-secondary m-1">Volver a la lista de alumnos</a>
+    </div>
+</div>
+
+@if (Alumno == null)
+{
+    <div class="spinner"></div>
+}
+else if (Alumno.FechaBaja != null)
+{
+    <p class="text-danger">Este alumno esta de baja.</p>
+}
+else if (ListaCursos.Count() == 0 || !ListaCursos.Any())
+{
+    <p class="text-danger">No hay Cursos Disponibles.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th><strong>Nombre curso</strong></th>
+                <th><strong>Precio</strong></th>
+                <th><strong>Fecha Inicio</strong></th>
+                <th><strong>Fecha Fin</strong></th>
+                <th><strong>Acción</strong></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var curso in ListaCursos)
+            {
+                foreach (var precio in curso.ListaPrecios)
+                {
+                    <tr>
+                        <td>@curso.NombreCurso</td>
+                        <td class="text-success"><strong>@precio.Coste €</strong></td>
+                        <td>@precio.FechaInicio.ToString("dd/MM/yyyy")</td>
+                        <td>@precio.FechaFin.ToString("dd/MM/yyyy")</td>
+                        @if (precio.FechaInicio <= DateTime.Now && DateTime.Now <= precio.FechaFin)
+                        {
+                            <td>
+                                <button class="btn btn-outline-primary" @onclick="() => InscribirAlumnoEnCurso(curso.Id, precio.Id)">
+                                    Inscribir
+                                </button>
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}

@@ -12,7 +12,7 @@ namespace BlazorServer.Servicios
         Task<Alumno> BorrarAlumno(int id);
         //Task<IEnumerable<Alumno>> BuscarAlumnos(string texto);
         ////Inscribir Alumnos en curso
-        Task<Alumno> InscribirAlumnoCurso(int idAlumno, int idCurso);
+        Task<Alumno> InscribirAlumnoCurso(int idAlumno, int idCurso, int idPrecio);
         ////Devuelve los datos de un alumno y todos sus cursos
         Task<Alumno> AlumnoCursos(int idAlumno);
     }

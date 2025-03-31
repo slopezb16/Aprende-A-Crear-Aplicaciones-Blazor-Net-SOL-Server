@@ -60,10 +60,10 @@ namespace ApiAlumnos.Controllers
             return Ok(curso);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> DameCursos()
+        [HttpGet("AlumnosCursos/{id:int}")]
+        public async Task<IActionResult> DameCursos(int id)
         {
-            var cursos = await _cursosRepositorio.DameCursos();
+            var cursos = await _cursosRepositorio.DameCursos(id);
             return Ok(cursos);
         }
 

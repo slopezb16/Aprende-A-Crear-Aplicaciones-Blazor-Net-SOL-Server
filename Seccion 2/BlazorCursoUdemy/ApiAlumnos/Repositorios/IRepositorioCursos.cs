@@ -7,7 +7,7 @@ namespace ApiAlumnos.Repositorios
         //Daremos de alta un curso y su precio
         Task<Curso> AltaCurso(Curso curso);
         //Devolveremos todos los cursos con sus precios
-        Task<IEnumerable<Curso>> DameCursos();
+        Task<IEnumerable<Curso>> DameCursos(int idAlumno);
         //Devolvera los datos de un curso con sus precios buscando por id
         Task<Curso> DameCurso(int id);
         //Devolvera los datos de un curso con sus precios buscando por curso

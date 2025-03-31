@@ -146,11 +146,11 @@ public class ServicioAlumnos : IServicioAlumnos
         }
     }
 
-    public async Task<Alumno> InscribirAlumnoCurso(int idAlumno, int idCurso)
+    public async Task<Alumno> InscribirAlumnoCurso(int idAlumno, int idCurso, int idPrecio)
     {
         try
         {
-            HttpResponseMessage response = await _httpClient.PostAsync($"API/Alumnos/InscribirAlumno/{idAlumno}/{idCurso}", null);
+            HttpResponseMessage response = await _httpClient.PostAsync($"API/Alumnos/InscribirAlumno/{idAlumno}/{idCurso}/{idPrecio}", null);
 
             if (response.IsSuccessStatusCode)
             {
