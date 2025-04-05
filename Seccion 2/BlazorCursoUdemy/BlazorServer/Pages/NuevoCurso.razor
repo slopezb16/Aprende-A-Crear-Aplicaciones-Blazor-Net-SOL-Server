@@ -1,0 +1,75 @@
+﻿@page "/NuevoCurso"
+
+<h3 class="text-center my-3">Crear Nuevo Curso</h3>
+
+@if (IsLoading)
+{
+    <div class="d-flex justify-content-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card p-4 shadow-lg">
+                    <div class="card-body">
+                        <EditForm Model="@Curso" OnValidSubmit="GuardarCurso">
+                            <DataAnnotationsValidator />
+
+                            <!-- Nombre del Curso -->
+                            <div class="form-group row">
+                                <label for="NombreCurso" class="col-sm-4 col-form-label">Curso:</label>
+                                <div class="col-sm-8">
+                                    <InputText id="NombreCurso" class="form-control" placeholder="Nombre del curso"
+                                               @bind-Value="Curso.NombreCurso" />
+                                    <ValidationMessage For="@(() => Curso.NombreCurso)" />
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <!-- Información del Precio -->
+                            <h5>Precio</h5>
+                            <div class="form-group row">
+                                <label for="Coste" class="col-sm-4 col-form-label">Precio (€):</label>
+                                <div class="col-sm-8">
+                                    <InputNumber id="Coste" ParsingErrorMessage="Debe introducir un coste"
+                                                 class="form-control" placeholder="Precio del curso"
+                                                 @bind-Value="Precio.Coste" />
+                                    <ValidationMessage For="@(() => Precio.Coste)" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="FechaInicio" class="col-sm-4 col-form-label">Fecha Inicio:</label>
+                                <div class="col-sm-8">
+                                    <InputDate id="FechaInicio" ParsingErrorMessage="Debe seleccionar una fecha"
+                                               class="form-control" placeholder="Fecha inicio del precio"
+                                               @bind-Value="Precio.FechaInicio" />
+                                    <ValidationMessage For="@(() => Precio.FechaInicio)" />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="FechaFin" class="col-sm-4 col-form-label">Fecha Fin:</label>
+                                <div class="col-sm-8">
+                                    <InputDate id="FechaFin" ParsingErrorMessage="Debe seleccionar una fecha"
+                                               class="form-control" placeholder="Fecha fin del precio"
+                                               @bind-Value="Precio.FechaFin" />
+                                    <ValidationMessage For="@(() => Precio.FechaFin)" />
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-3">
+                                <button type="submit" class="btn btn-success">Guardar</button>
+                                <button type="button" class="btn btn-secondary" @onclick="Cancelar">Cancelar</button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

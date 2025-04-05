@@ -36,14 +36,24 @@ namespace ApiAlumnos.Controllers
             if (curso == null)
                 return NotFound($"Curso con ID {id} no encontrado.");
 
-            await _cursosRepositorio.BorrarCurso(id);
-            return NoContent();
+            var result = await _cursosRepositorio.BorrarCurso(id);
+            return Ok(result);
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> DameCurso(int id)
         {
             var curso = await _cursosRepositorio.DameCurso(id);
+            if (curso == null)
+                return NotFound($"Curso con ID {id} no encontrado.");
+
+            return Ok(curso);
+        }
+
+        [HttpGet("{id:int}/{idPrecio:int}")]
+        public async Task<ActionResult<Curso>> DameCurso(int id, int idPrecio)
+        {
+            var curso = await _cursosRepositorio.DameCurso(id, idPrecio);
             if (curso == null)
                 return NotFound($"Curso con ID {id} no encontrado.");
 

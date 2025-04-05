@@ -63,6 +63,36 @@ a, .btn-link {
         content: "An error has occurred."
     }
 
+
+/* Tablas */
+.tabla-cursos {
+    background-color: #f8f9fa; /* gris claro casi blanco */
+    border: 1px solid #dee2e6;
+    border-radius: 30px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+    .tabla-cursos thead th {
+        background-color: #39c6c4 !important; /* azul oscuro */
+        color: #ffffff;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+    }
+
+    .tabla-cursos tbody tr:hover {
+        background-color: #dbeafe; /* azul claro al hover */
+        transition: background-color 0.3s ease-in-out;
+    }
+
+    .tabla-cursos td,
+    .tabla-cursos th {
+        vertical-align: middle;
+        padding: 1rem;
+        color: #343a40; /* gris oscuro para texto */
+    }
+
 .spinner {
     border: 16px solid silver;
     border-top: 16px solid #3a0647;
@@ -81,3 +111,4 @@ a, .btn-link {
 
         100% {
             transform: rotate(360deg)
+

@@ -1,0 +1,57 @@
+﻿@page "/ListaCursos"
+
+<h3 class="text-center my-3">Lista de Cursos</h3>
+
+<div class="text-center mb-3">
+    <button class="btn btn-success" @onclick="CrearCurso">Nuevo Curso</button>
+</div>
+
+@if (ListaCursos1 == null)
+{
+    <p>Cargando cursos...</p>
+}
+else if (!ListaCursos1.Any())
+{
+    <p class="text-danger">No hay Cursos Disponibles.</p>
+}
+else
+{
+    <table class="table tabla-cursos text-center">
+        <thead>
+            <tr>
+                <th>Nombre curso</th>
+                <th>Precio</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var curso in ListaCursos1)
+            {
+                foreach (var precio in curso.ListaPrecios)
+                {
+                    <tr>
+                        <td>@curso.NombreCurso</td>
+                        <td class="text-success"><strong>@precio.Coste €</strong></td>
+                        <td>@precio.FechaInicio.ToString("dd/MM/yyyy")</td>
+                        <td>@precio.FechaFin.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <button class="btn btn-outline-info m-1" title="Ver curso" @onclick="() => VerCurso(curso.Id, precio.Id)">Ver</button>
+                            <button class="btn btn-outline-warning m-1" title="Editar curso" @onclick="() => EditarCurso(curso.Id, precio.Id)">Editar</button>
+                            @* <button class="btn btn-outline-danger" title="Eliminar curso" @onclick="() => EliminarCurso(curso.Id)">Eliminar</button> *@
+                            <button type="button" class="btn btn-danger m-1" @onclick="@(() => MostrarConfirmacionEliminar(curso.Id))">Eliminar</button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+
+<ModalConfirmacion Titulo="¿Estás seguro?"
+                   Descripcion="@Descripcion"
+                   TipoModal="info"
+                   Mostrar="@MostrarModalEliminar"
+                   MostrarChanged="@((bool valor) => MostrarModalEliminar = valor)"
+                   OnConfirmar="@(() => EliminarCurso(IdCursoSeleccionado))" />

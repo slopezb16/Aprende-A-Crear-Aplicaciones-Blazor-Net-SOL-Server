@@ -1,0 +1,58 @@
+﻿@using Microsoft.AspNetCore.Components
+
+<div class="modal fade @(Mostrar ? "show d-block" : "")" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content shadow">
+            <div class="modal-header d-flex flex-column align-items-center border-0">
+                @if (!string.IsNullOrEmpty(TipoModal))
+                {
+                    <i class="@ObtenerIcono()" style="font-size: 6rem;"></i>
+                }
+                <h5 class="modal-title text-center">@Titulo</h5>
+            </div>
+            <div class="modal-body text-center">
+                <p>@Descripcion</p>
+            </div>
+            <div class="modal-footer d-flex justify-content-around border-0">
+                <button class="btn btn-secondary px-4" @onclick="Cerrar">Cancelar</button>
+                <button class="btn btn-outline-danger px-4" @onclick="Confirmar">Continuar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public string Titulo { get; set; }
+    [Parameter] public string Descripcion { get; set; }
+    [Parameter] public string TipoModal { get; set; } = "info"; // Valores: "success", "error", "info"
+    [Parameter] public EventCallback OnConfirmar { get; set; }
+    [Parameter] public EventCallback OnCancelar { get; set; }
+    [Parameter] public bool Mostrar { get; set; }
+    [Parameter] public EventCallback<bool> MostrarChanged { get; set; }
+
+    private string ObtenerIcono()
+    {
+        return TipoModal switch
+        {
+            "success" => "bi bi-check-circle text-success",
+            "error" => "bi bi-x-circle text-danger",
+            _ => "bi bi-info-circle text-primary" // Default a info
+        };
+    }
+
+    private async Task Confirmar()
+    {
+        await OnConfirmar.InvokeAsync();
+        await Cerrar();
+    }
+
+    private async Task Cerrar()
+    {
+        Mostrar = false;
+        await MostrarChanged.InvokeAsync(Mostrar);
+        if (OnCancelar.HasDelegate)
+        {
+            await OnCancelar.InvokeAsync();
+        }
+    }
+}

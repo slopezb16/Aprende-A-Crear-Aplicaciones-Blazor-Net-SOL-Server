@@ -1,5 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
+using System.Drawing;
+using System.Reflection.Metadata;
 using ApiAlumnos.Datos;
 using ModeloClasesAlumnos;
 
@@ -72,6 +74,45 @@ namespace ApiAlumnos.Repositorios
         public async Task<Curso> DameCurso(int id)
         {
             return await ObtenerCursoPorParametro("@id", id).ConfigureAwait(false);
+        }
+
+        public async Task<Curso> DameCurso(int id, int idPrecio)
+        {
+            Curso curso = null;
+
+            using (var sqlConexion = Conexion())
+            using (var Comm = new SqlCommand("dbo.CursoDameCursos", sqlConexion) { CommandType = CommandType.StoredProcedure })
+            {
+                Comm.Parameters.AddWithValue("@id", id);
+                Comm.Parameters.AddWithValue("@idPrecio", idPrecio);
+                await sqlConexion.OpenAsync().ConfigureAwait(false);
+
+                using (var reader = await Comm.ExecuteReaderAsync().ConfigureAwait(false))
+                {
+                    while (reader.Read())
+                    {
+                        if (curso == null)
+                        {
+                            curso = new Curso
+                            {
+                                Id = Convert.ToInt32(reader["idCurso"]),
+                                NombreCurso = reader["NombreCurso"].ToString(),
+                                ListaPrecios = new List<Precio>()
+                            };
+                        }
+
+                        curso.ListaPrecios.Add(new Precio
+                        {
+                            Id = Convert.ToInt32(reader["idPrecio"]),
+                            Coste = Convert.ToDouble(reader["Coste"]),
+                            FechaInicio = Convert.ToDateTime(reader["FechaInicio"]),
+                            FechaFin = Convert.ToDateTime(reader["FechaFin"])
+                        });
+                    }
+                }
+            }
+
+            return curso;
         }
 
         public async Task<Curso> DameCurso(string nombreCurso)
@@ -183,7 +224,8 @@ namespace ApiAlumnos.Repositorios
                 {
                     Comm.Parameters.Clear();
                     Comm.Parameters.AddWithValue("@idCurso", curso.Id);
-                    Comm.Parameters.AddWithValue("@idPrecio", precio.Id);
+                    if (precio.Id > 0)
+                        Comm.Parameters.AddWithValue("@idPrecio", precio.Id);
                     Comm.Parameters.AddWithValue("@NombreCurso", curso.NombreCurso);
                     Comm.Parameters.AddWithValue("@Coste", precio.Coste);
                     Comm.Parameters.AddWithValue("@FechaInicio", precio.FechaInicio);
