@@ -1,36 +1,43 @@
 ﻿using ModeloClasesAlumnos;
-using System.Net;
 using System.Net.Http;
+using Microsoft.Extensions.Logging;
 
 namespace BlazorServer.Servicios
 {
     public class ServicioCursos : IServicioCursos
     {
         private readonly HttpClient _httpClient;
+        private readonly ILogger<ServicioCursos> _logger;
 
-        public ServicioCursos(HttpClient httpClient)
+        public ServicioCursos(HttpClient httpClient, ILogger<ServicioCursos> logger)
         {
             _httpClient = httpClient;
+            _logger = logger;
         }
 
         public async Task<Curso> AltaCurso(Curso curso)
         {
             try
             {
+                _logger.LogInformation($"AltaCurso: Intentando crear el curso '{curso.NombreCurso}'...");
                 HttpResponseMessage response = await _httpClient.PostAsJsonAsync("Api/Cursos", curso);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadFromJsonAsync<Curso>();
+                    var nuevoCurso = await response.Content.ReadFromJsonAsync<Curso>();
+                    _logger.LogInformation($"AltaCurso: Curso '{nuevoCurso?.NombreCurso}' creado con éxito.");
+                    return nuevoCurso;
                 }
                 else
                 {
-                    throw new Exception($"Error en la solicitud: {response.StatusCode}");
+                    _logger.LogWarning($"AltaCurso: Falló la solicitud. Código HTTP: {response.StatusCode}");
+                    return null;
                 }
             }
             catch (HttpRequestException ex)
             {
-                throw new Exception($"Error al conectar con el servidor: {ex.Message}");
+                _logger.LogError(ex, "AltaCurso: Error al conectar con el servidor.");
+                return null;
             }
         }
 
@@ -38,52 +45,60 @@ namespace BlazorServer.Servicios
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<IEnumerable<Curso>>($"Api/Cursos/AlumnosCursos/{idAlumno}");
+                _logger.LogInformation($"DameCursos: Obteniendo cursos para el alumno con ID {idAlumno}...");
+                return await _httpClient.GetFromJsonAsync<IEnumerable<Curso>>($"Api/Cursos/AlumnosCursos/{idAlumno}")
+                    ?? Enumerable.Empty<Curso>();
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"Error al obtener cursos para el alumno con ID {idAlumno}: {ex.Message}");
+                _logger.LogError(ex, $"DameCursos: Error al obtener cursos para el alumno con ID {idAlumno}.");
                 return Enumerable.Empty<Curso>();
             }
-        }
-
-        public Task<Curso> DameCurso(int id)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<Curso> DameCurso(int id, int idPrecio)
         {
             try
             {
+                _logger.LogInformation($"DameCurso: Obteniendo curso con ID {id} y precio ID {idPrecio}...");
                 return await _httpClient.GetFromJsonAsync<Curso>($"Api/Cursos/{id}/{idPrecio}");
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"Error al obtener el curso con ID {id} y precio ID {idPrecio}: {ex.Message}");
+                _logger.LogError(ex, $"DameCurso: Error al obtener el curso con ID {id} y precio ID {idPrecio}.");
                 return null;
             }
+        }
+
+        public Task<Curso> DameCurso(int id)
+        {
+            _logger.LogWarning($"DameCurso: Método no implementado para ID {id}.");
+            return Task.FromResult<Curso>(null);
         }
 
         public async Task<Curso> ModificarCurso(Curso curso)
         {
             try
             {
+                _logger.LogInformation($"ModificarCurso: Modificando curso con ID {curso.Id}...");
+
                 var response = await _httpClient.PutAsJsonAsync($"Api/Cursos/{curso.Id}", curso);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadFromJsonAsync<Curso>();
+                    var cursoModificado = await response.Content.ReadFromJsonAsync<Curso>();
+                    _logger.LogInformation($"ModificarCurso: Curso con ID {curso.Id} modificado correctamente.");
+                    return cursoModificado;
                 }
                 else
                 {
-                    Console.WriteLine($"Error al modificar el curso con ID {curso.Id}: {response.ReasonPhrase}");
+                    _logger.LogWarning($"ModificarCurso: Falló la solicitud. Código HTTP: {response.StatusCode}");
                     return null;
                 }
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"Error al modificar el curso con ID {curso.Id}: {ex.Message}");
+                _logger.LogError(ex, $"ModificarCurso: Error al modificar el curso con ID {curso.Id}.");
                 return null;
             }
         }
@@ -92,21 +107,25 @@ namespace BlazorServer.Servicios
         {
             try
             {
+                _logger.LogInformation($"BorrarCurso: Intentando eliminar el curso con ID {id}...");
+
                 var response = await _httpClient.DeleteAsync($"Api/Cursos/{id}");
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return await response.Content.ReadFromJsonAsync<Curso>();
+                    var cursoEliminado = await response.Content.ReadFromJsonAsync<Curso>();
+                    _logger.LogInformation($"BorrarCurso: Curso con ID {id} eliminado correctamente.");
+                    return cursoEliminado;
                 }
                 else
                 {
-                    Console.WriteLine($"Error al eliminar el curso con ID {id}: {response.ReasonPhrase}");
+                    _logger.LogError($"BorrarCurso: No se pudo eliminar el curso con ID {id}. Código HTTP: {response.StatusCode}");
                     return null;
                 }
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"Error al eliminar el curso con ID {id}: {ex.Message}");
+                _logger.LogError(ex, $"BorrarCurso: Error al eliminar el curso con ID {id}.");
                 return null;
             }
         }

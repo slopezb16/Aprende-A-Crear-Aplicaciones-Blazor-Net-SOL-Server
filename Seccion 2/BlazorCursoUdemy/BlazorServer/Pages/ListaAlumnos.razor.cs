@@ -20,6 +20,7 @@ namespace BlazorServer.Pages
 
         protected override async Task OnInitializedAsync()
         {
+            //throw new Exception("Forzar");
             try
             {
                 Alumnos = (await ServicioAlumnos.DameAlumnos()).ToList();

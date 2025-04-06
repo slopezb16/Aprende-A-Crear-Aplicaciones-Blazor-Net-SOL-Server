@@ -2,14 +2,17 @@
 using ModeloClasesAlumnos;
 using System.Net;
 using System.Net.Http;
+using Microsoft.Extensions.Logging;
 
 public class ServicioAlumnos : IServicioAlumnos
 {
     private readonly HttpClient _httpClient;
+    private readonly ILogger<ServicioAlumnos> _logger;
 
-    public ServicioAlumnos(HttpClient httpClient)
+    public ServicioAlumnos(HttpClient httpClient, ILogger<ServicioAlumnos> logger)
     {
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+        _logger = logger;
     }
 
     public async Task<IEnumerable<Alumno>> DameAlumnos()
@@ -20,7 +23,7 @@ public class ServicioAlumnos : IServicioAlumnos
         }
         catch (HttpRequestException ex)
         {
-            Console.WriteLine($"Error al obtener alumnos: {ex.Message}");
+            _logger.LogError(ex, "DameAlumnos: Error al obtener alumnos.");
             return new List<Alumno>();
         }
     }
@@ -33,7 +36,7 @@ public class ServicioAlumnos : IServicioAlumnos
         }
         catch (HttpRequestException ex)
         {
-            Console.WriteLine($"Error al obtener alumno con ID {id}: {ex.Message}");
+            _logger.LogError(ex, $"DameAlumnoPorId: Error al obtener alumno con ID {id}.");
             return null;
         }
     }
@@ -46,7 +49,7 @@ public class ServicioAlumnos : IServicioAlumnos
         }
         catch (HttpRequestException ex)
         {
-            Console.WriteLine($"Error al obtener alumno con ID {email}: {ex.Message}");
+            _logger.LogError(ex, $"DameAlumnoPorEmail: Error al obtener alumno con email {email}.");
             return null;
         }
     }
@@ -64,24 +67,20 @@ public class ServicioAlumnos : IServicioAlumnos
             else if (response.StatusCode == HttpStatusCode.BadRequest)
             {
                 var errors = await response.Content.ReadFromJsonAsync<Dictionary<string, string[]>>();
-                if (errors != null && errors.ContainsKey("Email"))
-                {
-                    string mensaje = errors["Email"].FirstOrDefault() ?? "Error desconocido en el email.";
-                    throw new Exception(mensaje);
-                }
-                else
-                {
-                    throw new Exception("Datos inválidos. Verifica la información ingresada.");
-                }
+                string mensaje = errors?["Email"]?.FirstOrDefault() ?? "Datos inválidos en el email.";
+                _logger.LogWarning($"AltaAlumno: Error de validación - {mensaje}");
+                return null;
             }
             else
             {
-                throw new Exception($"Error en la solicitud: {response.StatusCode}");
+                _logger.LogWarning($"AltaAlumno: Error en la solicitud - Código HTTP: {response.StatusCode}");
+                return null;
             }
         }
         catch (HttpRequestException ex)
         {
-            throw new Exception($"Error al conectar con el servidor: {ex.Message}");
+            _logger.LogError(ex, "AltaAlumno: Error al conectar con el servidor.");
+            return null;
         }
     }
 
@@ -98,24 +97,20 @@ public class ServicioAlumnos : IServicioAlumnos
             else if (response.StatusCode == HttpStatusCode.BadRequest)
             {
                 var errors = await response.Content.ReadFromJsonAsync<Dictionary<string, string[]>>();
-                if (errors != null && errors.ContainsKey("Email"))
-                {
-                    string mensaje = errors["Email"].FirstOrDefault() ?? "Error desconocido en el email.";
-                    throw new Exception(mensaje);
-                }
-                else
-                {
-                    throw new Exception("Datos inválidos. Verifica la información ingresada.");
-                }
+                string mensaje = errors?["Email"]?.FirstOrDefault() ?? "Datos inválidos en el email.";
+                _logger.LogWarning($"ModificarAlumno: Error de validación - {mensaje}");
+                return null;
             }
             else
             {
-                throw new Exception($"Error en la solicitud: {response.StatusCode}");
+                _logger.LogWarning($"ModificarAlumno: Error en la solicitud - Código HTTP: {response.StatusCode}");
+                return null;
             }
         }
         catch (HttpRequestException ex)
         {
-            throw new Exception($"Error al conectar con el servidor: {ex.Message}");
+            _logger.LogError(ex, "ModificarAlumno: Error al conectar con el servidor.");
+            return null;
         }
     }
 
@@ -131,22 +126,23 @@ public class ServicioAlumnos : IServicioAlumnos
             }
             else if (response.StatusCode == HttpStatusCode.NotFound)
             {
-                Console.WriteLine($"Alumno con ID {id} no encontrado.");
+                _logger.LogError($"BorrarAlumno: Alumno con ID {id} no encontrado.");
                 return null;
             }
             else
             {
-                Console.WriteLine($"Error en la solicitud: {response.StatusCode}");
+                _logger.LogError($"BorrarAlumno: Error en la solicitud - Código HTTP: {response.StatusCode}");
                 return null;
             }
         }
         catch (HttpRequestException ex)
         {
-            throw new Exception($"Error al conectar con el servidor: {ex.Message}");
+            _logger.LogError(ex, "BorrarAlumno: Error al conectar con el servidor.");
+            return null;
         }
     }
 
-    public async Task<Alumno> InscribirAlumnoCurso(int idAlumno, int idCurso, int idPrecio)
+    public async Task<Alumno?> InscribirAlumnoCurso(int idAlumno, int idCurso, int idPrecio)
     {
         try
         {
@@ -160,16 +156,19 @@ public class ServicioAlumnos : IServicioAlumnos
             {
                 var errors = await response.Content.ReadFromJsonAsync<Dictionary<string, string[]>>();
                 string mensaje = errors?.Values.FirstOrDefault()?.FirstOrDefault() ?? "Datos inválidos.";
-                throw new Exception(mensaje);
+                _logger.LogWarning($"InscribirAlumnoCurso: Error de validación - {mensaje}");
+                return null;
             }
             else
             {
-                throw new Exception($"Error en la solicitud: {response.StatusCode}");
+                _logger.LogWarning($"InscribirAlumnoCurso: Error en la solicitud - Código HTTP: {response.StatusCode}");
+                return null;
             }
         }
         catch (HttpRequestException ex)
         {
-            throw new Exception($"Error al conectar con el servidor: {ex.Message}");
+            _logger.LogError(ex, "InscribirAlumnoCurso: Error al conectar con el servidor.");
+            return null;
         }
     }
 
@@ -177,12 +176,11 @@ public class ServicioAlumnos : IServicioAlumnos
     {
         try
         {
-            var result = await _httpClient.GetFromJsonAsync<Alumno>($"Api/Alumnos/CursosAlumno/{id}");
-            return result;
+            return await _httpClient.GetFromJsonAsync<Alumno>($"Api/Alumnos/CursosAlumno/{id}");
         }
         catch (HttpRequestException ex)
         {
-            Console.WriteLine($"Error al obtener alumno con ID {id}: {ex.Message}");
+            _logger.LogError(ex, $"AlumnoCursos: Error al obtener cursos del alumno con ID {id}.");
             return null;
         }
     }
