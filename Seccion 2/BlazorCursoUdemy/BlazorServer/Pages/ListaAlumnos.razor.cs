@@ -18,11 +18,24 @@ namespace BlazorServer.Pages
         public Alumno? Alumno { get; set; }
         public bool IsLoading { get; set; } = true;
 
+        // API
+        [Inject]
+        public IServicioLogin ServicioLogin { get; set; }
+
+        private Login login = new();
+        private UsuarioAPI usuarioAPI = new();
+
         protected override async Task OnInitializedAsync()
         {
             //throw new Exception("Forzar");
             try
             {
+                login.Usuario = Environment.GetEnvironmentVariable("UsuarioAPI");
+                login.Password = Environment.GetEnvironmentVariable("PassAPI");
+
+                usuarioAPI = await ServicioLogin.SolicitudLogin(login);
+                Environment.SetEnvironmentVariable("Token", usuarioAPI.Token);
+
                 Alumnos = (await ServicioAlumnos.DameAlumnos()).ToList();
                 StateHasChanged();
             }

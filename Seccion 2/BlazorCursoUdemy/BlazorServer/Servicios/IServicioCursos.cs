@@ -8,8 +8,6 @@ namespace BlazorServer.Servicios
         Task<Curso> AltaCurso(Curso curso);
         //Devolveremos todos los cursos con sus precios
         Task<IEnumerable<Curso>> DameCursos(int idAlumno);
-        //Devolvera los datos de un curso con sus precios buscando por id
-        Task<Curso> DameCurso(int id);
         //
         Task<Curso> DameCurso(int id, int idPrecio);
 

@@ -1,0 +1,48 @@
+﻿@page "/RegistroLogin"
+@using Microsoft.AspNetCore.Components.Forms
+@using BlazorServer.Shared
+
+<!-- Fondo animado -->
+<div class="background-animated"></div>
+
+<!-- Puntos animados -->
+<div class="floating-particles">
+    @for (int i = 0; i < 60; i++)
+    {
+        <div class="particle" style="@GetParticleStyle(i)"></div>
+    }
+</div>
+
+<!-- Contenedor centrado -->
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="login-card animate-fadeIn text-center">
+        <h3 class="text-center mb-4 text-primary">Registro</h3>
+        <EditForm Model="@usuarioRegistro" OnValidSubmit="@RegistrarUsuario">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText id="email" class="form-control" @bind-Value="usuarioRegistro.EmailLogin" />
+                <ValidationMessage For="@(() => usuarioRegistro.EmailLogin)" />
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <InputText id="password" type="password" class="form-control" @bind-Value="usuarioRegistro.Password" />
+                <ValidationMessage For="@(() => usuarioRegistro.Password)" />
+            </div>
+
+            <div class="d-grid gap-2 mt-4">
+                <button class="btn btn-outline-success" type="submit">Registrarse</button>
+                <button class="btn btn-outline-secondary" type="button" @onclick="IrALogin">Volver</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+<ModalConfirmacion Titulo="@iconError"
+                   Descripcion="@textoError"
+                   TipoModal="@tipoError"
+                   Mostrar="@mostrarModal"
+                   MostrarChanged="@((bool valor) => mostrarModal = valor)"
+                   OnConfirmar="@(() => IrALogin())" />

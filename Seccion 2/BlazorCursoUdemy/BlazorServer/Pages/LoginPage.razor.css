@@ -1,0 +1,124 @@
+﻿body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+.background-animated {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(270deg, #00c9ff, #92fe9d, #fbc2eb, #a6c1ee);
+    background-size: 800% 800%;
+    animation: gradientMove 20s ease infinite;
+    z-index: -2;
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+    .login-card:hover {
+        transform: scale(1.015);
+    }
+
+.btn-outline-success,
+.btn-outline-secondary {
+    font-weight: bold;
+}
+
+.animate-fadeIn {
+    animation: fadeIn 1.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Partículas animadas */
+.floating-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.6);
+    animation: bounce 10s infinite ease-in-out;
+}
+
+@keyframes bounce {
+    0% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(100px, 150px);
+    }
+
+    50% {
+        transform: translate(-120px, 200px);
+    }
+
+    75% {
+        transform: translate(60px, -100px);
+    }
+
+    100% {
+        transform: translate(0, 0);
+    }
+}
+
+/* Generar posición aleatoria para cada partícula */
+.particle:nth-child(odd) {
+    animation-duration: 8s;
+}
+
+.particle:nth-child(even) {
+    animation-duration: 12s;
+}
+
+.particle:nth-child(3n) {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.particle:nth-child(4n) {
+    background-color: rgba(255, 255, 255, 0.8);
+}

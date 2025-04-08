@@ -1,5 +1,7 @@
-﻿using BlazorServer.Servicios;
+﻿using Blazored.SessionStorage;
+using BlazorServer.Servicios;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using NLog.Extensions.Logging;
 
@@ -29,6 +31,13 @@ builder.Services.AddHttpClient<IServicioCursos, ServicioCursos>(cliente =>
 {
     cliente.BaseAddress = new Uri(apiBaseUrl);
 });
+builder.Services.AddHttpClient<IServicioLogin, ServicioLogin>(cliente =>
+{
+    cliente.BaseAddress = new Uri(apiBaseUrl);
+});
+
+builder.Services.AddBlazoredSessionStorage();
+builder.Services.AddScoped<AuthenticationStateProvider, Authentication>();
 
 var app = builder.Build();
 
@@ -49,8 +58,12 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
 
 // Log de prueba para verificar que NLog funciona
 var logger = app.Services.GetRequiredService<ILogger<Program>>();

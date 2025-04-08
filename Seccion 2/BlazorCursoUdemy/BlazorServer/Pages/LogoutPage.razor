@@ -1,0 +1,22 @@
+﻿@page "/LogoutPage"
+@using BlazorServer.Servicios
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject Blazored.SessionStorage.ISessionStorageService almacenarSesion
+@inject NavigationManager NavigationManager
+
+<h3>LogoutPage</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        ((Authentication)AuthenticationStateProvider).CerrarSesion();
+
+        // Notificar autenticación
+        if (AuthenticationStateProvider is Authentication customAuth)
+        {
+            customAuth.MarcarUsuarioComoDesconectado();
+        }
+
+        NavigationManager.NavigateTo("/LoginPage", forceLoad: true);
+    }
+}

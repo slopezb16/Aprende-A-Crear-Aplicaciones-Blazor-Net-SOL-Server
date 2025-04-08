@@ -1,6 +1,7 @@
 ﻿@page "/AlumnoCursosDetalle/{idAlumno:int}"
 @using BlazorServer.Servicios;
 @using ModeloClasesAlumnos;
+@attribute [Authorize]
 
 <h1>Listado de Cursos de @Alumno?.Nombre</h1>
 

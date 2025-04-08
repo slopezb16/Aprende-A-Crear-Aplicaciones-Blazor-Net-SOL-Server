@@ -1,6 +1,7 @@
 ﻿@page "/InscribirAlumno/{id:int}"
 @using BlazorServer.Servicios;
 @using ModeloClasesAlumnos;
+@attribute [Authorize]
 
 <h1>Inscribir a @Alumno?.Nombre en un curso</h1>
 

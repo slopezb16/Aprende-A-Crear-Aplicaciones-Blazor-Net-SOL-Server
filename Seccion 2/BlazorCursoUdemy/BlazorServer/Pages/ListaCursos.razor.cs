@@ -21,8 +21,21 @@ namespace BlazorServer.Pages
         private bool MostrarModalEliminar { get; set; } = false;
         private int IdCursoSeleccionado { get; set; }
 
+        // API
+        [Inject]
+        public IServicioLogin ServicioLogin { get; set; }
+
+        private Login login = new();
+        private UsuarioAPI usuarioAPI = new();
+
         protected override async Task OnInitializedAsync()
         {
+            login.Usuario = Environment.GetEnvironmentVariable("UsuarioAPI");
+            login.Password = Environment.GetEnvironmentVariable("PassAPI");
+
+            usuarioAPI = await ServicioLogin.SolicitudLogin(login);
+            Environment.SetEnvironmentVariable("Token", usuarioAPI.Token);
+
             ListaCursos1 = await ServicioCursos.DameCursos(-1);
         }
 

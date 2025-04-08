@@ -1,4 +1,5 @@
 ﻿@page "/AlumnoDetalle/{id:int}/{modo}"
+@attribute [Authorize]
 
 <h3 class="text-center my-3">@(EsModoEdicion ? "Editar Alumno" : "Detalles del Alumno")</h3>
 

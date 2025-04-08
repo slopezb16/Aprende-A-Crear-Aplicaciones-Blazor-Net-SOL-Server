@@ -12,7 +12,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="5.4.0" />
+    <PackageReference Include="System.Text.Json" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

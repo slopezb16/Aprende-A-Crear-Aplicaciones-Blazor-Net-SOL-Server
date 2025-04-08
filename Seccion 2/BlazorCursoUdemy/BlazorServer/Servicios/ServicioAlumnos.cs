@@ -3,6 +3,7 @@ using ModeloClasesAlumnos;
 using System.Net;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
 
 public class ServicioAlumnos : IServicioAlumnos
 {
@@ -19,6 +20,8 @@ public class ServicioAlumnos : IServicioAlumnos
     {
         try
         {
+            string token = Environment.GetEnvironmentVariable("Token");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return await _httpClient.GetFromJsonAsync<List<Alumno>>("Api/Alumnos") ?? new List<Alumno>();
         }
         catch (HttpRequestException ex)
@@ -32,6 +35,8 @@ public class ServicioAlumnos : IServicioAlumnos
     {
         try
         {
+            string token = Environment.GetEnvironmentVariable("Token");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return await _httpClient.GetFromJsonAsync<Alumno>($"Api/Alumnos/{id}");
         }
         catch (HttpRequestException ex)
@@ -45,6 +50,8 @@ public class ServicioAlumnos : IServicioAlumnos
     {
         try
         {
+            string token = Environment.GetEnvironmentVariable("Token");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return await _httpClient.GetFromJsonAsync<Alumno>($"Api/Alumnos/{email}");
         }
         catch (HttpRequestException ex)
@@ -58,6 +65,8 @@ public class ServicioAlumnos : IServicioAlumnos
     {
         try
         {
+            string token = Environment.GetEnvironmentVariable("Token");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage response = await _httpClient.PostAsJsonAsync("Api/Alumnos", alumno);
 
             if (response.IsSuccessStatusCode)
@@ -88,6 +97,8 @@ public class ServicioAlumnos : IServicioAlumnos
     {
         try
         {
+            string token = Environment.GetEnvironmentVariable("Token");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"Api/Alumnos/{alumno.Id}", alumno);
 
             if (response.IsSuccessStatusCode)
@@ -118,6 +129,8 @@ public class ServicioAlumnos : IServicioAlumnos
     {
         try
         {
+            string token = Environment.GetEnvironmentVariable("Token");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage response = await _httpClient.DeleteAsync($"Api/Alumnos/{id}");
 
             if (response.IsSuccessStatusCode)
@@ -146,6 +159,8 @@ public class ServicioAlumnos : IServicioAlumnos
     {
         try
         {
+            string token = Environment.GetEnvironmentVariable("Token");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             HttpResponseMessage response = await _httpClient.PostAsync($"API/Alumnos/InscribirAlumno/{idAlumno}/{idCurso}/{idPrecio}", null);
 
             if (response.IsSuccessStatusCode)
@@ -176,6 +191,8 @@ public class ServicioAlumnos : IServicioAlumnos
     {
         try
         {
+            string token = Environment.GetEnvironmentVariable("Token");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             return await _httpClient.GetFromJsonAsync<Alumno>($"Api/Alumnos/CursosAlumno/{id}");
         }
         catch (HttpRequestException ex)

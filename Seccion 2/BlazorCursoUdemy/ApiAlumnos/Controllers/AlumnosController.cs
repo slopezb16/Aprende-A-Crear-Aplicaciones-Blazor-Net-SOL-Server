@@ -1,4 +1,6 @@
 ﻿using ApiAlumnos.Repositorios;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ModeloClasesAlumnos;
 
@@ -8,6 +10,7 @@ namespace ApiAlumnos.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AlumnosController : ControllerBase
     {
 
@@ -20,6 +23,7 @@ namespace ApiAlumnos.Controllers
 
         // GET: api/<AlumnosController>
         [HttpGet]
+        //[AllowAnonymous]
         public async Task<ActionResult> GetAlumnos()
         {
             try

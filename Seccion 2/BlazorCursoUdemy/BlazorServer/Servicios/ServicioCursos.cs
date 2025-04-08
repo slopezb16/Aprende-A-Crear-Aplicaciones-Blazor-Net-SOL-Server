@@ -1,6 +1,7 @@
 ﻿using ModeloClasesAlumnos;
 using System.Net.Http;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
 
 namespace BlazorServer.Servicios
 {
@@ -19,6 +20,8 @@ namespace BlazorServer.Servicios
         {
             try
             {
+                string token = Environment.GetEnvironmentVariable("Token");
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 _logger.LogInformation($"AltaCurso: Intentando crear el curso '{curso.NombreCurso}'...");
                 HttpResponseMessage response = await _httpClient.PostAsJsonAsync("Api/Cursos", curso);
 
@@ -45,6 +48,8 @@ namespace BlazorServer.Servicios
         {
             try
             {
+                string token = Environment.GetEnvironmentVariable("Token");
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 _logger.LogInformation($"DameCursos: Obteniendo cursos para el alumno con ID {idAlumno}...");
                 return await _httpClient.GetFromJsonAsync<IEnumerable<Curso>>($"Api/Cursos/AlumnosCursos/{idAlumno}")
                     ?? Enumerable.Empty<Curso>();
@@ -60,6 +65,8 @@ namespace BlazorServer.Servicios
         {
             try
             {
+                string token = Environment.GetEnvironmentVariable("Token");
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 _logger.LogInformation($"DameCurso: Obteniendo curso con ID {id} y precio ID {idPrecio}...");
                 return await _httpClient.GetFromJsonAsync<Curso>($"Api/Cursos/{id}/{idPrecio}");
             }
@@ -70,16 +77,12 @@ namespace BlazorServer.Servicios
             }
         }
 
-        public Task<Curso> DameCurso(int id)
-        {
-            _logger.LogWarning($"DameCurso: Método no implementado para ID {id}.");
-            return Task.FromResult<Curso>(null);
-        }
-
         public async Task<Curso> ModificarCurso(Curso curso)
         {
             try
             {
+                string token = Environment.GetEnvironmentVariable("Token");
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 _logger.LogInformation($"ModificarCurso: Modificando curso con ID {curso.Id}...");
 
                 var response = await _httpClient.PutAsJsonAsync($"Api/Cursos/{curso.Id}", curso);
@@ -107,6 +110,8 @@ namespace BlazorServer.Servicios
         {
             try
             {
+                string token = Environment.GetEnvironmentVariable("Token");
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 _logger.LogInformation($"BorrarCurso: Intentando eliminar el curso con ID {id}...");
 
                 var response = await _httpClient.DeleteAsync($"Api/Cursos/{id}");

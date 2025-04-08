@@ -1,13 +1,22 @@
 ﻿<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <NotAuthorized>
+                <h1>Acceso no autorizado</h1>
+                <p class="text-danger">Debes iniciar sesión para acceder a esta página.</p>
+            </NotAuthorized>
+            <Authorizing>
+                <h1>Autenticando...</h1>
+                <p class="text-info">Por favor, espera un momento.</p>
+            </Authorizing>
+        </AuthorizeRouteView>
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
     <NotFound>
         <PageTitle>Not found</PageTitle>
         <LayoutView Layout="@typeof(MainLayout)">
-            <h1>Pagina no encontrada</h1>
-            <p class="text-danger" role="alert">Vata a otra pagina de nuestra aplicacion</p>
+            <h1>Página no encontrada</h1>
+            <p class="text-danger" role="alert">Vaya a otra página de nuestra aplicación.</p>
         </LayoutView>
     </NotFound>
 </Router>
