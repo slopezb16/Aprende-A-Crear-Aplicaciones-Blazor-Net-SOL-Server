@@ -1,0 +1,4 @@
+1.Proyectos de inicio - ApiAlumnos y BlazorServer al tiempo
+2.ApiAlumnos inicia como IIS Express
+3.BlazorServer inicia como BlazorServer
+4.Tener cuidado con el appseting.json del BlazorServer. Que apunte a la API
