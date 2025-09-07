@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ModeloClasesAlumnos;
+using System.Data.SqlClient;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,19 +22,50 @@ namespace ApiAlumnos.Controllers
             this._repositorioAlumnos = repositorioAlumnos;
         }
 
+        //Antes
         // GET: api/<AlumnosController>
-        [HttpGet]
-        //[AllowAnonymous]
-        public async Task<ActionResult> GetAlumnos()
+        //[HttpGet]
+        ////[AllowAnonymous]
+        //public async Task<ActionResult> GetAlumnos()
+        //{
+        //    try
+        //    {
+        //           return Ok(await _repositorioAlumnos.DameAlumnos());
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(StatusCodes.Status500InternalServerError, "Error obteniendo los Datos");
+        //    }
+        //}
+
+        //Despues
+        [HttpGet("DameAlumnos/{idPagina}/{numRegistros}")]
+        public async Task<ActionResult<List<Alumno>>> DameAlumnos(int idPagina, int numRegistros)
         {
+
+            List<Alumno> resultado = new List<Alumno>();
+            Alumno Aux = new Alumno();
             try
             {
-                   return Ok(await _repositorioAlumnos.DameAlumnos());
+                resultado = (List<Alumno>)await _repositorioAlumnos.DameAlumnos(idPagina, numRegistros);
             }
-            catch (Exception)
+            catch (SqlException ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error obteniendo los Datos");
+                Aux.error = new Error();
+                //log.LogError("Se produjo un error en el controlador de alumnos en el método DameAlumnos:" + ex.ToString());
+                Aux.error.mensaje = "Error obteniendo lista de alumnos " + ex.Message;
+                Aux.error.mostrarUsuario = true;
+                resultado.Add(Aux);
             }
+            catch (Exception ex)
+            {
+                Aux.error = new Error();
+                //log.LogError("Se produjo un error en el controlador de cursos en el método DameCursos:" + ex.ToString());
+                Aux.error.mensaje = ex.ToString();
+                Aux.error.mostrarUsuario = false;
+                resultado.Add(Aux);
+            }
+            return resultado;
         }
 
         // GET api/<AlumnosController>/5

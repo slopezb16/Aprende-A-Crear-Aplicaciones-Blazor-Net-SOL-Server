@@ -16,13 +16,31 @@ public class ServicioAlumnos : IServicioAlumnos
         _logger = logger;
     }
 
-    public async Task<IEnumerable<Alumno>> DameAlumnos()
+    public async Task<IEnumerable<Alumno>> DameAlumnos(int idPagina, int numRegistros)
     {
         try
         {
             string token = Environment.GetEnvironmentVariable("Token");
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            return await _httpClient.GetFromJsonAsync<List<Alumno>>("Api/Alumnos") ?? new List<Alumno>();
+            //return await _httpClient.GetFromJsonAsync<List<Alumno>>("Api/Alumnos") ?? new List<Alumno>(); // Antes
+            List<Alumno> alu = await _httpClient.GetFromJsonAsync<List<Alumno>>("API/Alumnos/DameAlumnos/" + idPagina.ToString() + "/" + numRegistros.ToString());
+
+            if (alu != null && alu[0].error != null && alu[0].error.mensaje != String.Empty)
+            {
+                if (alu[0].error.mostrarUsuario)
+                {
+                    _logger.LogError("Error obteniendo alumnos: " + alu[0].error.mensaje);
+                    throw new Exception(alu[0].error.mensaje);
+                }
+                else
+                {
+                    _logger.LogError("Error obteniendo alumnos: " + alu[0].error.mensaje);
+                    throw new Exception("Error obteniendo alumnos");
+                }
+
+            }
+
+            return alu;
         }
         catch (HttpRequestException ex)
         {

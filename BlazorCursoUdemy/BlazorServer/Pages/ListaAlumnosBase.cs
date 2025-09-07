@@ -18,7 +18,7 @@ namespace BlazorServer.Pages
         //API
         protected override async Task OnInitializedAsync()
         {
-            Alumnos = (await ServicioAlumnos.DameAlumnos()).ToList();
+            //Alumnos = (await ServicioAlumnos.DameAlumnos()).ToList();
         }
 
         //protected override Task OnInitializedAsync()

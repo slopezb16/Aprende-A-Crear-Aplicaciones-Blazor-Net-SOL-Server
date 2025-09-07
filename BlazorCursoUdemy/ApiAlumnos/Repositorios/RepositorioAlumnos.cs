@@ -206,46 +206,102 @@ namespace ApiAlumnos.Repositorios
             return alumno;
         }
 
-        public async Task<IEnumerable<Alumno>> DameAlumnos()
+        //Antes
+        //public async Task<IEnumerable<Alumno>> DameAlumnos()
+        //{
+        //    var listaAlumnos = new List<Alumno>();
+
+        //    using (var sqlConnection = Conexion())
+        //    using (var sqlCommand = new SqlCommand("dbo.UsuarioDameAlumnos", sqlConnection))
+        //    {
+        //        sqlCommand.CommandType = CommandType.StoredProcedure;
+
+        //        try
+        //        {
+        //            await sqlConnection.OpenAsync();
+        //            using (var reader = await sqlCommand.ExecuteReaderAsync())
+        //            {
+        //                while (await reader.ReadAsync())
+        //                {
+        //                    var alumno = new Alumno
+        //                    {
+        //                        Id = reader.GetInt32(reader.GetOrdinal("Id")),
+        //                        Nombre = reader["Nombre"].ToString(),
+        //                        Email = reader["Email"].ToString(),
+        //                        Foto = reader["Foto"].ToString(),
+        //                        FechaAlta = Convert.ToDateTime(reader["FechaAlta"].ToString()),
+        //                        FechaBaja = reader.IsDBNull(reader.GetOrdinal("FechaBaja"))
+        //                                    ? (DateTime?)null
+        //                                    : reader.GetDateTime(reader.GetOrdinal("FechaBaja"))
+        //                    };
+
+        //                    listaAlumnos.Add(alumno);
+        //                }
+        //            }
+        //        }
+        //        catch (SqlException ex)
+        //        {
+        //            // Puedes registrar el error para un análisis posterior si tienes un sistema de logging
+        //            throw new Exception("Error al obtener los datos de los alumnos. Intente nuevamente más tarde.", ex);
+        //        }
+        //    }
+
+        //    return listaAlumnos;
+        //}
+
+        //Despues
+        public async Task<IEnumerable<Alumno>> DameAlumnos(int idPagina, int numRegistros)
         {
-            var listaAlumnos = new List<Alumno>();
-
-            using (var sqlConnection = Conexion())
-            using (var sqlCommand = new SqlCommand("dbo.UsuarioDameAlumnos", sqlConnection))
+            List<Alumno> lista = new List<Alumno>();
+            SqlConnection sqlConexion = Conexion();
+            SqlCommand Comm = null;
+            SqlDataReader reader = null;
+            try
             {
-                sqlCommand.CommandType = CommandType.StoredProcedure;
 
-                try
-                {
-                    await sqlConnection.OpenAsync();
-                    using (var reader = await sqlCommand.ExecuteReaderAsync())
-                    {
-                        while (await reader.ReadAsync())
-                        {
-                            var alumno = new Alumno
-                            {
-                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                                Nombre = reader["Nombre"].ToString(),
-                                Email = reader["Email"].ToString(),
-                                Foto = reader["Foto"].ToString(),
-                                FechaAlta = Convert.ToDateTime(reader["FechaAlta"].ToString()),
-                                FechaBaja = reader.IsDBNull(reader.GetOrdinal("FechaBaja"))
-                                            ? (DateTime?)null
-                                            : reader.GetDateTime(reader.GetOrdinal("FechaBaja"))
-                            };
+                Alumno alu = new Alumno();
+                alu.paginacion = new Paginacion();
 
-                            listaAlumnos.Add(alumno);
-                        }
-                    }
-                }
-                catch (SqlException ex)
+                sqlConexion.Open();
+                Comm = sqlConexion.CreateCommand();
+                Comm.CommandText = "dbo.UsuarioDameAlumnos";
+                Comm.CommandType = CommandType.StoredProcedure;
+                Comm.Parameters.Add("@numpagina", SqlDbType.Int).Value = idPagina;
+                Comm.Parameters.Add("@numregistros", SqlDbType.Int).Value = numRegistros;
+
+                reader = await Comm.ExecuteReaderAsync();
+                while (reader.Read())
                 {
-                    // Puedes registrar el error para un análisis posterior si tienes un sistema de logging
-                    throw new Exception("Error al obtener los datos de los alumnos. Intente nuevamente más tarde.", ex);
+
+                    alu.Id = Convert.ToInt32(reader["Id"]);
+                    alu.Nombre = reader["Nombre"].ToString();
+                    alu.Email = reader["Email"].ToString();
+                    alu.Foto = reader["Foto"].ToString();
+                    alu.FechaAlta = Convert.ToDateTime(reader["FechaAlta"].ToString());
+                    if (reader["FechaBaja"] != System.DBNull.Value)
+                        alu.FechaBaja = Convert.ToDateTime(reader["FechaBaja"].ToString());
+
+                    alu.paginacion = new Paginacion();
+                    alu.paginacion.totalPaginas = Convert.ToInt32(reader["totalPaginas"]);
+
+                    lista.Add(alu);
+                    alu = new Alumno();
+
                 }
+
+
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+
+                Comm.Dispose();
+                sqlConexion.Close();
+                sqlConexion.Dispose();
             }
 
-            return listaAlumnos;
+            return lista;
         }
 
         public async Task<Alumno> ModificarAlumno(Alumno alumno)

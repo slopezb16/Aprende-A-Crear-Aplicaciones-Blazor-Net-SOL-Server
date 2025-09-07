@@ -18,6 +18,10 @@ namespace BlazorServer.Pages
         public Alumno? Alumno { get; set; }
         public bool IsLoading { get; set; } = true;
 
+        public int paginaActual;
+        public int paginasTotales;
+        Paginacion paginacion = new Paginacion();
+
         // API
         [Inject]
         public IServicioLogin ServicioLogin { get; set; }
@@ -36,7 +40,13 @@ namespace BlazorServer.Pages
                 usuarioAPI = await ServicioLogin.SolicitudLogin(login);
                 Environment.SetEnvironmentVariable("Token", usuarioAPI.Token);
 
-                Alumnos = (await ServicioAlumnos.DameAlumnos()).ToList();
+                paginaActual = paginacion.pagina;
+                //Alumnos = (await ServicioAlumnos.DameAlumnos()).ToList(); // Antes
+                Alumnos = (await ServicioAlumnos.DameAlumnos(paginacion.pagina, paginacion.registros)).ToList();
+
+                if (Alumnos.ToList().Count > 0)
+                    paginasTotales = Alumnos.ToList().ElementAt(0).paginacion.totalPaginas;
+
                 StateHasChanged();
             }
             catch (Exception ex)
@@ -132,6 +142,15 @@ namespace BlazorServer.Pages
         private async Task<bool> ConfirmarActivacion()
         {
             return await JS.InvokeAsync<bool>("confirm", "¿Estás seguro de que deseas activar este alumno?");
+        }
+
+        public async Task PaginaSeleccionada(int pagina)
+        {
+            paginaActual = pagina;
+            Alumnos = (await ServicioAlumnos.DameAlumnos(paginaActual, paginacion.registros)).ToList();
+
+            if (Alumnos.ToList().Count > 0)
+                paginasTotales = Alumnos.ToList().ElementAt(0).paginacion.totalPaginas;
         }
     }
 }

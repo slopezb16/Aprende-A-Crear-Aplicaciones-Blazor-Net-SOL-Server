@@ -8,6 +8,9 @@
     <button class="btn btn-success" @onclick="CrearAlumno">Nuevo Alumno</button>
 </div>
 
+<Paginacion PaginaMostrada="paginaActual" PaginasTotales="paginasTotales" PaginaSeleccionada="PaginaSeleccionada">
+</Paginacion>
+
 @if (IsLoading)
 {
     <div class="d-flex justify-content-center my-5">

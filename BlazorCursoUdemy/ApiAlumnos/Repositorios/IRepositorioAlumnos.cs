@@ -5,7 +5,7 @@ namespace ApiAlumnos.Repositorios
     public interface IRepositorioAlumnos
     {
         Task<Alumno> AltaAlumno(Alumno alumno);
-        Task<IEnumerable<Alumno>> DameAlumnos();
+        Task<IEnumerable<Alumno>> DameAlumnos(int idPagina, int numRegistros);
         Task<Alumno> DameAlumno(int id);
         Task<Alumno> DameAlumno(string email);
         Task<Alumno> ModificarAlumno(Alumno alumno);
